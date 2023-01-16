@@ -1,2 +1,5 @@
 # cryptography-python
-Learning python and cryptography together
+
+Learning Python and cryptography together.
+
+I will use PyCryptodrome too.
