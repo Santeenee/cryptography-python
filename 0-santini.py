@@ -14,7 +14,7 @@ def read_file(name):
   # delete possible trailing newlines
   return out_str.strip('\n')
 
-# if n is positive, the array is shifted (rotated) to the right
+# if n is positive, the array is shited (rotated) to the right
 def shift_alph(arr, n):
   # arr[n:] takes the characters from the index 'n' onwards
   # arr[:n] takes the characters before the index 'n'
@@ -43,7 +43,8 @@ def enc_dec(in_str, key_str, sign = 1):
       err_msg += in_str[charIndex] + '"'
       raise CaesarCipherError(err_msg)
 
-    # put that position 'i' in 'shifted_alph'. every loop cycle assign it to 'out_str'
+    # put that position 'i' in 'shifted_alph'. 
+    # every loop cycle append the corresponding character to 'out_str'
     out_str += shifted_alph[i]
 
   return out_str
