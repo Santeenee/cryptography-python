@@ -1,4 +1,5 @@
 # --Symmetric Encryption--
+# Encrypt/decrypt with AES and KDF 'scrypt'
 
 # import cryptography modules
 from Crypto.Cipher import AES
@@ -80,18 +81,23 @@ def gen_prompt(f_type, reading):
 
 
 # function that generates key from user password and salt
+# parameters:
+# - is_encrypt: boolean that tells if we are encrypting or decrypting
+# - salt: bytes that are used for the scrypt function
 def  get_key_salt (is_encrypt:bool, salt:bytes = b''):
     password = getpass("\nInsert password to generate key: ")
 
     if is_encrypt:
         salt = get_random_bytes(16)
 
+    # message to display while the user waits for the scrypt function to end
+    print('\nGenerating the key...')
+
     # A good choice of parameters (N, r , p) was suggested by Colin Percival
     # in his presentation in 2009:
     # http://www.tarsnap.com/scrypt/scrypt-slides.pdf
     #
-    # ( 2²⁰, 8, 1 ) for file encryption (≤5s)
-    print('\nGenerating the key...')
+    # ( N=2²⁰, r=8, p=1 ) for file encryption (≤5s)
     key = scrypt(password, salt, 16, N=2**20, r=8, p=1)
     
     if is_encrypt:
@@ -114,17 +120,6 @@ def encrypt():
     
     # output
     print(write_file(gen_prompt("encrypted data", False), c_data))
-
-# function that validates key length
-# parameters:
-# data: byte string to check
-# k_len: length in bytes the key must have
-def check_k_len(data, k_len):
-    if len(data) != k_len:
-        err_msg = 'Error: the key must be exactly '
-        err_msg += k_len + ' bytes long, the input was '
-        err_msg += len(data) + ' bytes long.'
-        raise ValidationError(err_msg)
 
 # function that validates ciphertext file length
 # parameters:
@@ -180,7 +175,6 @@ def menu():
 while True:
     # get user's choice and call appropriate function
     # errors are captured and printed out
-    # authentication is needed
     choice = menu()
     try:
         if choice == '1':
