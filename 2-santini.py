@@ -91,6 +91,7 @@ def  get_key_salt (is_encrypt:bool, salt:bytes = b''):
     # http://www.tarsnap.com/scrypt/scrypt-slides.pdf
     #
     # ( 2²⁰, 8, 1 ) for file encryption (≤5s)
+    print('\nGenerating the key...')
     key = scrypt(password, salt, 16, N=2**20, r=8, p=1)
     
     if is_encrypt:
