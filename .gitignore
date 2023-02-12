@@ -1,4 +1,8 @@
 OneTimePad.py
 lec2.py
 *.txt
+*.pem
+*.dec
+*.enc
 ignoreme/
+#.vscode/

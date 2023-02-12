@@ -1,5 +1,5 @@
 # --Symmetric Encryption--
-# Encrypt/decrypt with AES and KDF 'scrypt'
+# Encrypt/decrypt .txt files with AES and KDF 'scrypt'
 
 # import cryptography modules
 from Crypto.Cipher import AES
@@ -84,7 +84,7 @@ def gen_prompt(f_type, reading):
 # parameters:
 # - is_encrypt: boolean that tells if we are encrypting or decrypting
 # - salt: bytes that are used for the scrypt function
-def  get_key_salt (is_encrypt:bool, salt:bytes = b''):
+def  get_key_salt (is_encrypt, salt = b''):
     password = getpass("\nInsert password to generate key: ")
 
     if is_encrypt:
