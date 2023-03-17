@@ -1,9 +1,18 @@
 import json
 import os.path
 from getpass import getpass
+# Finalist (but not winner) of the NIST hash function competition,
+# it is up to 3 times faster than SHA3
 from Crypto.Hash import BLAKE2b
+# Scrypt is a Key Derivation Function 
+# meaning it derives a key from a given passfrase.
+# Particularly effective against brute-force
 from Crypto.Protocol.KDF import scrypt
 from Crypto.Random import get_random_bytes
+# AES stands for "symmetric encryption standard"
+# it is very fast and efficient compared to other
+# symmetric encryption algorithms, it protects
+# against side channel attacks
 from Crypto.Cipher import AES
 
 # custom errors
@@ -12,23 +21,30 @@ class SymEncError(Exception):
 
 def getKeyByPsw(psw: str, salt):
     '''
-        This method generate a key from a password
-        It uses a Key Derivation Function named 'scrypt'
+        Generate key from a password
 
         Parameters:
-        - psw: password. IT MUST BE A STRING
+        - psw: `string`
         - salt: if not specified or the length is incorrect it will generate a new 16 byte salt
         
         Returns:
-        - the generated key and the salt
+        - generated key and the salt
     '''
-            
+    
     if len(salt) != 16:
         salt = get_random_bytes(16)
     key = scrypt(psw, salt, 16, N=2**20, r=8, p=1)
     return key, salt
 
 def save_and_exit(path, password, credentials):
+    '''
+        Encrypts and saves file given the path, password and credentials
+
+        Parameters: 
+        - path: `string`
+        - password: `string`
+        - credentials: dict containing the credentials to save
+    '''
     data = json.dumps(credentials, ensure_ascii=False).encode('utf-8')
     
     salt = get_random_bytes(16)
@@ -44,6 +60,17 @@ def save_and_exit(path, password, credentials):
         out_file.write(ciphertext)
 
 def search_and_add(query, dic):
+    '''
+        Searchs for credentials
+        If there is no credentials then they are added
+
+        Parameters:
+        - query: `string`
+        - dic: `string`
+
+        Returns:
+        - dic
+    '''
     if query in dic:
         print('username: ', dic[query]['username'])
         print('password: ', dic[query]['password'])
@@ -61,6 +88,16 @@ def search_and_add(query, dic):
     return dic
 
 def load_data(path, password):
+    '''
+        Decrypts given file
+
+        Parameters:
+        - path: `string`
+        - password: `string` used to derive key
+
+        Returns:
+        - credentials in file
+    '''
     with open(path, 'rb') as in_file:
         key = scrypt(password, in_file.read(16), 16, N=2**20, r=8, p=1)
         nonce = in_file.read(15)
@@ -81,7 +118,14 @@ def load_data(path, password):
     return credentials
 
 def log_in(username, password):
-    # the script uses BLAKE2 because it is very fast on modern hardware.
+    '''
+        Log in flow
+        Uses Blake2b hashing function, it allows up to 64bits
+
+        Parameters:
+        - username: `string`
+        - password: `string`
+    '''
     blake_hash = BLAKE2b.new(data = username.encode('utf-8'), digest_bytes=64)
     path_file = blake_hash.hexdigest()
     
@@ -129,6 +173,6 @@ while True:
         print('Goodbye!')
         exit()
     else:
-        # read password properly
-        password = getpass('Password: ')
+        # read password
+        password = getpass()
         log_in(username, password)
